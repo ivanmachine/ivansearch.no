@@ -1,0 +1,23 @@
+name: 🦖 Deploy dashboard
+on:
+  push:
+    branches:
+      - deploy_frontend
+  workflow_dispatch:
+jobs:
+  play-deploy:
+    name: 🍜 Deploy dashboard to do_server VPS
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pull latest container, and restart it
+        uses: appleboy/ssh-action@v0.1.5
+        with:
+          host: ${{ secrets.DO_VPS_IP }} # VPS IP address from GitHub Secrets
+          username: "root" # VPS username from GitHub Secrets
+          password: ${{ secrets.DO_VPS_PASSWORD }}
+          port: 22 # SSH port (default is 22)
+          script: |
+            docker pull ivanmachine/ivansearch_frontend:latest --platform linux/arm64
+            docker stop frontend || true  # stop existing container if running
+            docker rm frontend || true    # remove existing container if exists
+            docker run -d --name frontend -p 4100:3000 ivanmachine/ivansearch_frontend:latest
