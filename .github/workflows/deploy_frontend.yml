@@ -18,6 +18,6 @@ jobs:
           port: 22 # SSH port (default is 22)
           script: |
             docker pull ivanmachine/ivansearch_frontend:latest --platform linux/arm64
-            docker stop frontend || true  # stop existing container if running
-            docker rm frontend || true    # remove existing container if exists
-            docker run -d --name frontend -p 4100:3000 ivanmachine/ivansearch_frontend:latest
+            docker stop ivansearch_frontend || true  # stop existing container if running
+            docker rm ivansearch_frontend || true    # remove existing container if exists
+            docker run -d --name ivansearch_frontend -p 4100:3000 ivanmachine/ivansearch_frontend:latest

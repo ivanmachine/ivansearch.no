@@ -1,6 +1,5 @@
 deploy_frontend:
-	DOCKER_DEFAULT_PLATFORM=linux/amd64
-	docker build -t ivanmachine/ivansearch_frontend:latest -f frontend/Dockerfile ./frontend
+	DOCKER_DEFAULT_PLATFORM=linux/amd64 docker build -t ivanmachine/ivansearch_frontend:latest -f frontend/Dockerfile ./frontend
 	docker push ivanmachine/ivansearch_frontend:latest
 	git push && git push origin main:deploy_frontend -f
 
