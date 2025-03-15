@@ -4,14 +4,17 @@ FROM rust:latest as builder
 # Set the working directory
 WORKDIR /usr/src/backend
 
+# Install the target architecture
+RUN rustup target add x86_64-unknown-linux-gnu
+
 # Copy the Cargo files and install dependencies
 COPY Cargo.toml Cargo.lock ./
 RUN mkdir src && echo "fn main() {}" > src/main.rs
-RUN cargo build --release
+RUN cargo build --release --target x86_64-unknown-linux-gnu
 
 # Copy the actual source code and build
 COPY . .
-RUN cargo build --release
+RUN cargo build --release --target x86_64-unknown-linux-gnu
 
 # Use a minimal image for runtime with a newer glibc
 FROM debian:bookworm-slim
@@ -23,10 +26,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy the compiled binary from builder
-COPY --from=builder /usr/src/backend/target/release/backend /app/
+COPY --from=builder /usr/src/backend/target/x86_64-unknown-linux-gnu/release/backend /app/
 
 # Expose port
 EXPOSE 3000
 
 # Start the server with better error visibility
-CMD ["sh", "-c", "ls -la && ./backend"]
+CMD ["./backend"]
