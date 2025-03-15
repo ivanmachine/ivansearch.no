@@ -1,6 +1,10 @@
 [package]
 name = "backend"
 version = "0.1.0"
-edition = "2024"
+edition = "2021"
 
 [dependencies]
+warp = "0.3"  # Web framework for REST API
+tokio = { version = "1", features = ["full"] }  # Async runtime
+serde = { version = "1", features = ["derive"] }  # JSON handling
+serde_json = "1"

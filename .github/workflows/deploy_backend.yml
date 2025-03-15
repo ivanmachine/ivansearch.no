@@ -1,0 +1,23 @@
+name: 🧠 Deploy backend
+on:
+  push:
+    branches:
+      - deploy_backend
+  workflow_dispatch:
+jobs:
+  play-deploy:
+    name: 🍜 Deploy backend to hetzner server
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pull latest container, and restart it
+        uses: appleboy/ssh-action@v0.1.5
+        with:
+          host: ${{ secrets.HETZNER_IP }} # VPS IP address from GitHub Secrets
+          username: "root" # VPS username from GitHub Secrets
+          password: ${{ secrets.HETZNER_PASSWORD }}
+          port: 22 # SSH port (default is 22)
+          script: |
+            docker pull ivanmachine/ivansearch_backend:latest
+            docker stop ivansearch_backend || true  # stop existing container if running
+            docker rm ivansearch_backend || true    # remove existing container if exists
+            docker run -d --name ivansearch_backend -p 3000:3000 ivanmachine/ivansearch_backend:latest
