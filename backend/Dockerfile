@@ -4,9 +4,6 @@ FROM rust:latest as builder
 # Set the working directory
 WORKDIR /usr/src/backend
 
-# Install the target architecture
-RUN rustup target add x86_64-unknown-linux-gnu
-
 # Copy the Cargo files and install dependencies
 COPY Cargo.toml Cargo.lock ./
 RUN mkdir src && echo "fn main() {}" > src/main.rs
