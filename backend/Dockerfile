@@ -1,32 +1,40 @@
-# Use the latest official Rust image
-FROM rust:latest as builder
+# ---- Build Stage (Cross-platform) ----
+FROM --platform=linux/amd64 rust:1.74 AS builder
 
-# Set the working directory
+# Set working directory
 WORKDIR /usr/src/backend
 
-# Copy the Cargo files and install dependencies
+# Install required packages for cross-compilation
+RUN apt-get update && apt-get install -y build-essential pkg-config libssl-dev
+
+# Copy dependencies first (for caching)
 COPY Cargo.toml Cargo.lock ./
 RUN mkdir src && echo "fn main() {}" > src/main.rs
-RUN cargo build --release --target x86_64-unknown-linux-gnu
+RUN cargo build --release
+RUN rm -rf src
 
-# Copy the actual source code and build
-COPY . .
-RUN cargo build --release --target x86_64-unknown-linux-gnu
+# Now copy source code
+COPY ./src ./src
+COPY .env ./.env
 
-# Use a minimal image for runtime with a newer glibc
-FROM debian:bookworm-slim
+# Build the actual project
+RUN cargo build --release
+
+# ---- Runtime Stage (Minimal image) ----
+FROM --platform=linux/amd64 debian:bullseye-slim
+
+# Set working directory for the app
 WORKDIR /app
 
-# Install necessary runtime dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
+# Copy binary and .env file
+COPY --from=builder /usr/src/backend/target/release/ivansearch-backend /app/
+COPY --from=builder /usr/src/backend/.env /app/.env
 
-# Copy the compiled binary from builder
-COPY --from=builder /usr/src/backend/target/x86_64-unknown-linux-gnu/release/backend /app/
+# Install necessary runtime dependencies (ssl, etc.)
+RUN apt-get update && apt-get install -y libssl-dev ca-certificates && rm -rf /var/lib/apt/lists/*
 
-# Expose port
-EXPOSE 3000
+# Expose the API port
+EXPOSE 8000
 
-# Start the server with better error visibility
-CMD ["./backend"]
+# Start your Rust backend
+CMD ["./ivansearch-backend"]

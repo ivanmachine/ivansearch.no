@@ -1,15 +1,26 @@
-use warp::Filter;
+use axum::{routing::get, Router};
+use dotenv::dotenv;
+use std::env;
+use tokio::net::TcpListener;
+use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 #[tokio::main]
 async fn main() {
-    // Define the "hello" route
-    let hello = warp::path!("hello" / String)
-        .map(|name| format!("Hello, {}!", name));
+    dotenv().ok();
 
-    println!("Starting server on 0.0.0.0:3000");
+    tracing_subscriber::registry()
+        .with(tracing_subscriber::EnvFilter::from_default_env())
+        .with(tracing_subscriber::fmt::layer())
+        .init();
 
-    // Start the server on all interfaces (0.0.0.0)
-    warp::serve(hello)
-        .run(([0, 0, 0, 0], 3000))
-        .await;
+    let app = Router::new().route("/", get(|| async { "Ivansearch backend is live 🚀" }));
+
+    let host = env::var("HOST").unwrap_or("0.0.0.0".into());
+    let port = env::var("PORT").unwrap_or("8000".into());
+    let addr = format!("{}:{}", host, port);
+
+    let listener = TcpListener::bind(&addr).await.unwrap();
+    println!("Listening on {}", addr);
+
+    axum::serve(listener, app).await.unwrap();
 }
