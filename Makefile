@@ -26,5 +26,11 @@ run_qdrant:
 		-v ~/projects/ivansearch/qdrant/storage:/qdrant/storage \
 		qdrant/qdrant
 
-run_pocketbase:
-	./db/pocketbase serve --dir ./db/pb_data
+run_postgres:
+	docker rm -f ivansearch_postgres || true
+	docker run -d \
+		--name ivansearch_postgres \
+		-p 5432:5432 \
+		-e POSTGRES_PASSWORD=hardTopostgre221 \
+		-v ~/projects/ivansearch/db:/var/lib/postgresql/data \
+		postgres:16

@@ -4,10 +4,20 @@ use std::env;
 use tokio::net::TcpListener;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
+mod db;
+use db::create_pool;
+
 #[tokio::main]
 async fn main() {
     dotenv().ok();
-    println!("Starting Ivansearch backend...");
+    let pool = create_pool().await;
+    // Quick test to check connection
+    sqlx::query!("SELECT 1 AS test")
+        .fetch_one(&pool)
+        .await
+        .expect("Failed test query");
+
+    println!("Connected to DB successfully! 🚀");
 
     tracing_subscriber::registry()
         .with(tracing_subscriber::EnvFilter::from_default_env())
