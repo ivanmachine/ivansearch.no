@@ -1,8 +1,6 @@
 import { sealData, unsealData } from "iron-session";
-import { SESSION_PASSWORD } from "$env/static/private";
 
-if (!SESSION_PASSWORD) throw new Error("No .env with SESSION_PASSWORD");
-
+const SESSION_PASSWORD = "sajhbgvbjihgvhcfY&%RTYU(/Y&TRDFGYUHIYGFTGHVBJUHYFT)"; // TODO: fix later
 // Can fail !!!!
 export async function unsealSession(
   auth_session: string | undefined
@@ -12,7 +10,7 @@ export async function unsealSession(
   const unsealedCookie: UserSession = await unsealData(auth_session, {
     password: SESSION_PASSWORD,
   });
-  return unsealedCookie?.email ? unsealedCookie : null;
+  return unsealedCookie?.user ? unsealedCookie : null;
 }
 
 // Can fail !!!!
@@ -24,5 +22,5 @@ export async function sealSession(user: UserSession) {
 }
 
 export type UserSession = {
-  email: string;
+  user: string;
 };
