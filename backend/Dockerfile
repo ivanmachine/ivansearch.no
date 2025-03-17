@@ -16,13 +16,15 @@ COPY .env .env
 RUN cargo build --release
 
 EXPOSE 8000
+ARG TARGET_DIR=""
 
 # Determine architecture and set target directory
+
 RUN arch=$(uname -m) && \
     if [ "$arch" = "x86_64" ]; then \
-    export TARGET_DIR="x86_64-unknown-linux-musl"; \
+    TARGET_DIR="x86_64-unknown-linux-musl"; \
     elif [ "$arch" = "aarch64" ]; then \
-    export TARGET_DIR="aarch64-unknown-linux-musl"; \
+    TARGET_DIR="aarch64-unknown-linux-musl"; \
     else \
     echo "Unsupported architecture: $arch"; \
     exit 1; \
