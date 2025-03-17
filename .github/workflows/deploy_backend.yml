@@ -20,4 +20,4 @@ jobs:
             docker pull ivanmachine/ivansearch_backend:latest
             docker stop ivansearch_backend || true  
             docker rm ivansearch_backend || true   
-            docker run -d --name ivansearch_backend -p 3000:3000 ivanmachine/ivansearch_backend:latest
+            docker run -d --name ivansearch_backend -p 3000:8000 ivanmachine/ivansearch_backend:latest
