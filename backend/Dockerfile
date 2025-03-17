@@ -4,7 +4,7 @@ FROM clux/muslrust:stable AS builder
 WORKDIR /volume
 
 # Cache dependencies
-COPY Cargo.toml Cargo.lock ./
+COPY Cargo.toml Cargo.lock .cargo ./
 RUN mkdir src && echo "fn main() {}" > src/main.rs
 RUN cargo build --release
 
@@ -15,8 +15,21 @@ COPY .env .env
 # Build the project
 RUN cargo build --release
 
-# Move the binary to the desired location
-RUN chmod +x ./target/release/bin/ivansearch-backend
-
 EXPOSE 8000
-CMD ["./target/release/bin/ivansearch-backend"]
+
+# Set default target directory
+ENV TARGET_DIR="x86_64-unknown-linux-musl"
+
+# Determine architecture and set target directory
+RUN arch=$(uname -m) && \
+    if [ "$arch" = "x86_64" ]; then \
+    TARGET_DIR="x86_64-unknown-linux-musl"; \
+    elif [ "$arch" = "aarch64" ]; then \
+    TARGET_DIR="aarch64-unknown-linux-musl"; \
+    else \
+    echo "Unsupported architecture: $arch"; \
+    exit 1; \
+    fi
+
+RUN chmod +x target/${TARGET_DIR}/release/bin/ivansearch-backend
+CMD ["./target/${TARGET_DIR}/release/bin/ivansearch-backend"]

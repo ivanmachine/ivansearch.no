@@ -4,7 +4,7 @@ deploy_frontend:
 	git push && git push origin main:deploy_frontend -f
 
 deploy_backend:
-	docker buildx build --platform linux/amd64 --build-arg TARGETARCH=aarch64 -t ivanmachine/ivansearch_backend:latest -f backend/Dockerfile ./backend --push
+	docker buildx build --platform linux/amd64 -t ivanmachine/ivansearch_backend:latest -f backend/Dockerfile ./backend --push
 	git push && git push origin main:deploy_backend -f
 
 build_backend_local:
