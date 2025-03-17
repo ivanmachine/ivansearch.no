@@ -11,24 +11,12 @@ RUN cargo build --release
 # Copy actual source code
 COPY ./src ./src
 COPY .env .env
+COPY init.sh init.sh
 
 # Build the project
 RUN cargo build --release
 
 EXPOSE 8000
-ARG TARGET_DIR=""
-
 # Determine architecture and set target directory
-
-RUN arch=$(uname -m) && \
-    if [ "$arch" = "x86_64" ]; then \
-    TARGET_DIR="x86_64-unknown-linux-musl"; \
-    elif [ "$arch" = "aarch64" ]; then \
-    TARGET_DIR="aarch64-unknown-linux-musl"; \
-    else \
-    echo "Unsupported architecture: $arch"; \
-    exit 1; \
-    fi && \
-    chmod +x target/${TARGET_DIR}/release/ivansearch-backend
-
-CMD ["sh", "-c", "./target/${TARGET_DIR}/release/ivansearch-backend"]
+RUN chmod +x init.sh
+CMD ["./init.sh"]
