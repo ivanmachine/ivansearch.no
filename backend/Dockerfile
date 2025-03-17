@@ -4,7 +4,7 @@ FROM clux/muslrust:stable AS builder
 WORKDIR /volume
 
 # Cache dependencies
-COPY Cargo.toml Cargo.lock .cargo ./
+COPY Cargo.toml Cargo.lock ./
 RUN mkdir src && echo "fn main() {}" > src/main.rs
 RUN cargo build --release
 
