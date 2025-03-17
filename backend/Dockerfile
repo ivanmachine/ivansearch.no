@@ -12,12 +12,11 @@ RUN cargo build --release
 COPY ./src ./src
 COPY .env .env
 
-# Set the default architecture to aarch64, but allow it to be overridden
-ARG TARGETARCH=aarch64
-
-# Use the build argument to set the correct path
+# Build the project
 RUN cargo build --release
-RUN chmod +x ./target/${TARGETARCH}-unknown-linux-musl/release/ivansearch-backend
+
+# Move the binary to the desired location
+RUN chmod +x ./target/release/bin/ivansearch-backend
 
 EXPOSE 8000
-CMD ["./target/${TARGETARCH}-unknown-linux-musl/release/ivansearch-backend"]
+CMD ["./target/release/bin/ivansearch-backend"]
