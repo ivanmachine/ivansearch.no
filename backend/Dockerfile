@@ -31,5 +31,5 @@ RUN arch=$(uname -m) && \
     exit 1; \
     fi
 
-RUN chmod +x target/${TARGET_DIR}/release/bin/ivansearch-backend
-CMD ["./target/${TARGET_DIR}/release/bin/ivansearch-backend"]
+RUN chmod +x target/${TARGET_DIR}/release/ivansearch-backend
+CMD ["./target/${TARGET_DIR}/release/ivansearch-backend"]
