@@ -19,4 +19,4 @@ RUN cargo build --release
 EXPOSE 8000
 # Determine architecture and set target directory
 RUN chmod +x init.sh
-CMD ["./init.sh"]
+CMD ["/bin/sh", "./init.sh"]
